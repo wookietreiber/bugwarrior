@@ -207,6 +207,14 @@ class GithubIssue(Issue):
         updated = self.parse_date(self.record.get('updated_at'))
         closed = self.parse_date(self.record.get('closed_at'))
 
+        repo = self.record['repo']
+        if repo.startswith("id"):
+            repo = repo.replace("id", "myd", 1)
+
+        namespace = self.extra['namespace']
+        if namespace.startswith("id"):
+            namespace = namespace.replace("id", "myd", 1)
+
         return {
             'project': self.extra['project'],
             'priority': self.origin['default_priority'],
@@ -216,7 +224,7 @@ class GithubIssue(Issue):
             'end': closed,
 
             self.URL: self.record['html_url'],
-            self.REPO: self.record['repo'],
+            self.REPO: repo,
             self.TYPE: self.extra['type'],
             self.USER: self.record['user']['login'],
             self.TITLE: self.record['title'],
@@ -226,7 +234,7 @@ class GithubIssue(Issue):
             self.CREATED_AT: created,
             self.UPDATED_AT: updated,
             self.CLOSED_AT: closed,
-            self.NAMESPACE: self.extra['namespace'],
+            self.NAMESPACE: namespace,
             self.STATE: self.record.get('state', '')
         }
 

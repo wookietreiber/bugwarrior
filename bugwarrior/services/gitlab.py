@@ -151,6 +151,10 @@ class GitlabIssue(Issue):
                 (self.extra['type'] == 'merge_request' and duedate is None)):
             duedate = milestone['due_date']
         if milestone:
+            if milestone['title'].startswith("id"):
+                log.warning(" milestone title starts with id: %s", milestone['title'])
+                milestone['title'] = milestone['title'].replace("id", "myd", 1)
+
             milestone = milestone['title']
         if created:
             created = self.parse_date(created).replace(microsecond=0)
