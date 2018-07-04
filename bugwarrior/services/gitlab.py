@@ -377,8 +377,20 @@ class GitlabService(IssueService, ServiceClient):
 
         full = []
         detect_broken_gitlab_pagination = []
+        retries = 3
         while True:
-            items = self._fetch(tmpl, params=params)
+            while retries > 0:
+                try:
+                    items = self._fetch(tmpl, params=params)
+                    break
+                except requests.exceptions.ConnectionError as e:
+                    retries -= 1
+
+            if retries == 0:
+                url = tmpl.format(scheme=self.scheme, host=self.auth[0])
+                log.warning(" %s has multiple connection errors", url)
+                items = []
+
             if not items:
                 break
 
