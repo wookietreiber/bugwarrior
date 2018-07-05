@@ -146,16 +146,18 @@ class GitlabIssue(Issue):
             self.record['body'] if self.extra['type'] == 'todo'
             else self.record['description'])
 
-        if milestone and (
-                self.extra['type'] == 'issue' or
-                (self.extra['type'] == 'merge_request' and duedate is None)):
-            duedate = milestone['due_date']
         if milestone:
+            # TODO this should be tested!
+            milestone_due_date = milestone['due_date']
+            if not duedate and milestone_due_date:
+                duedate = milestone_due_date
+
             if milestone['title'].startswith("id"):
                 log.warning(" milestone title starts with id: %s", milestone['title'])
                 milestone['title'] = milestone['title'].replace("id", "myd", 1)
 
             milestone = milestone['title']
+
         if created:
             created = self.parse_date(created).replace(microsecond=0)
         if updated:
